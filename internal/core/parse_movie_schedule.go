@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"bot/internal/structs"
@@ -11,7 +11,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
-func parseMovieSchedule(message twitch.PrivateMessage, client *twitch.Client, MovieList *[]structs.Movie) {
+func ParseMovieSchedule(message twitch.PrivateMessage, client *twitch.Client, MovieList *[]structs.Movie) {
 	iniData := utils.GetIniData()
 
 	botName := iniData.Section("main").Key("schedule_bot_name").String()

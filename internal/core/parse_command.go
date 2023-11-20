@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"bot/internal/commands"
@@ -9,7 +9,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
-func parseCommand(message twitch.PrivateMessage, client *twitch.Client, movieList []structs.Movie) {
+func ParseCommand(message twitch.PrivateMessage, client *twitch.Client, movieList []structs.Movie) {
 	const prefix string = "!"
 
 	if strings.HasPrefix(message.Message, prefix) {
@@ -24,8 +24,6 @@ func parseCommand(message twitch.PrivateMessage, client *twitch.Client, movieLis
 			commands.Now(message, client, movieList)
 		case command == "next":
 			commands.Next(message, client, movieList)
-		case command == "test":
-			commands.Test(message, client)
 		case command == "joke":
 			commands.Joke(message, client)
 		case command == "fact":

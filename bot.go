@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bot/internal/core"
 	"bot/internal/structs"
 	"bot/internal/utils"
 	"fmt"
@@ -34,8 +35,8 @@ func main() {
 	})
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		parseMovieSchedule(message, client, &movieList)
-		parseCommand(message, client, movieList)
+		core.ParseMovieSchedule(message, client, &movieList)
+		core.ParseCommand(message, client, movieList)
 	})
 
 	for _, channel := range channels {
