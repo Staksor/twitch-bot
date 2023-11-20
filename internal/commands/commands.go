@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bot/internal/utils"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,13 +11,15 @@ import (
 
 // Prints a list of available bot commands
 func Commands(message twitch.PrivateMessage, client *twitch.Client) {
+	iniData := utils.GetIniData()
+
 	files, err := os.ReadDir("./internal/commands")
 	var commands []string
 
 	if err == nil {
 		for _, file := range files {
 			var noExtensiionName string = (strings.TrimSuffix(file.Name(), filepath.Ext(file.Name())))
-			commands = append(commands, "!"+noExtensiionName)
+			commands = append(commands, iniData.Section("main").Key("bot_command_prefix").String()+noExtensiionName)
 		}
 	}
 
