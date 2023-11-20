@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Makes an HTTP request to API Ninjas
 func ApiNinjasRequest(api string) string {
 	iniData := GetIniData()
 

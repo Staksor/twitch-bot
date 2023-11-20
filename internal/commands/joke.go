@@ -8,6 +8,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Prints a random dad joke from API Ninjas
 func Joke(message twitch.PrivateMessage, client *twitch.Client) {
 	var apiResponse string = utils.ApiNinjasRequest("dadjokes")
 

@@ -11,6 +11,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Parses the movie schedule and creates a slice of movie objects which contain the movie name and the timestamp of the movie start time
 func ParseMovieSchedule(message twitch.PrivateMessage, client *twitch.Client, MovieList *[]structs.Movie) {
 	iniData := utils.GetIniData()
 

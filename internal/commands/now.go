@@ -10,9 +10,12 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Prints the name of the current movie, its current progress and total movie length
 func Now(message twitch.PrivateMessage, client *twitch.Client, movieList []structs.Movie) {
 	if len(movieList) == 0 {
-		client.Reply(message.Channel, message.ID, "Idk kev")
+		client.Reply(message.Channel, message.ID, "eShrug")
+
+		return
 	}
 
 	timezone, _ := time.LoadLocation("Europe/Berlin")

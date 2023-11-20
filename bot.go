@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Init...")
+	fmt.Println("Starting...")
 
 	iniData := utils.GetIniData()
 
@@ -19,7 +19,7 @@ func main() {
 	}
 	var movieList []structs.Movie
 
-	client := twitch.NewClient("movisbot", "oauth:"+iniData.Section("main").Key("oauth_access_token").String())
+	client := twitch.NewClient(iniData.Section("main").Key("bot_account_name").String(), "oauth:"+iniData.Section("main").Key("oauth_access_token").String())
 
 	client.OnConnect(func() {
 		fmt.Println("Connected...")

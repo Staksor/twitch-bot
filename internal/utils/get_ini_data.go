@@ -10,7 +10,7 @@ import (
 func GetIniData() *ini.File {
 	iniData, err := ini.Load("config.ini")
 	if err != nil {
-		fmt.Printf("Fail to read file: %v", err)
+		fmt.Printf("config.ini wasn't found")
 		os.Exit(1)
 	}
 

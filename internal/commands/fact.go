@@ -8,6 +8,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Prints a random interesting fact from API Ninjas
 func Fact(message twitch.PrivateMessage, client *twitch.Client) {
 	var apiResponse string = utils.ApiNinjasRequest("facts")
 

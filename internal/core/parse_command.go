@@ -3,14 +3,18 @@ package core
 import (
 	"bot/internal/commands"
 	"bot/internal/structs"
+	"bot/internal/utils"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Parses the name of the command and executes its handler
 func ParseCommand(message twitch.PrivateMessage, client *twitch.Client, movieList []structs.Movie) {
-	const prefix string = "!"
+	iniData := utils.GetIniData()
+
+	var prefix string = iniData.Section("main").Key("bot_command_prefix").String()
 
 	if strings.HasPrefix(message.Message, prefix) {
 		_, i := utf8.DecodeRuneInString(message.Message)
@@ -34,6 +38,8 @@ func ParseCommand(message twitch.PrivateMessage, client *twitch.Client, movieLis
 			commands.JoinChannel(message, client, args[0])
 		case command == "leavechannel":
 			commands.LeaveChannel(message, client, args[0])
+		case command == "commands":
+			commands.Commands(message, client)
 		}
 	}
 }

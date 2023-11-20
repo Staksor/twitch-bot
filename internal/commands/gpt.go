@@ -13,7 +13,14 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Makes a request to an API of a GPT chat bot
 func Gpt(message twitch.PrivateMessage, client *twitch.Client, chatMessage string) {
+	if len(chatMessage) <= 3 {
+		client.Reply(message.Channel, message.ID, "Please write a longer message")
+
+		return
+	}
+
 	iniData := utils.GetIniData()
 
 	Request := structs.GptRequest{

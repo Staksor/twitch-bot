@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
+// Makes the bot to leave a channel
 func LeaveChannel(message twitch.PrivateMessage, client *twitch.Client, channel string) {
 	iniData := utils.GetIniData()
 
