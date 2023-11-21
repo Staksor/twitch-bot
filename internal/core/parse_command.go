@@ -42,7 +42,7 @@ func ParseCommand(
 		case "gpt":
 			commands.Gpt(message, client, strings.Join(args, " "), gptResponses, cooldowns)
 		case "continue":
-			commands.Continue(message, client, gptResponses)
+			commands.Continue(message, client, gptResponses, cooldowns)
 		case "joinchannel":
 			commands.JoinChannel(message, client, args[0])
 		case "leavechannel":

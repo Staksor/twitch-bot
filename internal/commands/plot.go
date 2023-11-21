@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Makes a request to an API of a GPT chat bot
+// Prints the movie plot
 func Plot(
 	message twitch.PrivateMessage,
 	client *twitch.Client,
@@ -46,6 +46,8 @@ func Plot(
 					client.Reply(message.Channel, message.ID, fmt.Sprintf("%s. %s", movieTitle, moviePlot))
 				}
 			}
+		} else {
+			client.Reply(message.Channel, message.ID, "eShrug")
 		}
 	} else {
 		fmt.Println(err)

@@ -17,6 +17,7 @@ func main() {
 
 	channels := []string{
 		iniData.Section("main").Key("main_channel").String(),
+		iniData.Section("main").Key("bot_account_name").String(),
 	}
 	var movieList []structs.Movie
 	cooldowns := make(map[string]*time.Time)

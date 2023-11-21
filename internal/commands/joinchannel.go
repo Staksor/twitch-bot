@@ -10,7 +10,8 @@ import (
 func JoinChannel(message twitch.PrivateMessage, client *twitch.Client, channel string) {
 	iniData := utils.GetIniData()
 
-	if message.Channel == iniData.Section("main").Key("main_channel").String() {
+	if message.Channel == iniData.Section("main").Key("main_channel").String() &&
+		(channel == message.User.Name || message.User.Name == iniData.Section("main").Key("main_channel").String()) {
 		client.Join(channel)
 		client.Say(message.Channel, "Joined "+channel)
 	}

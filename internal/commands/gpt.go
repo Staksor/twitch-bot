@@ -27,11 +27,12 @@ func Gpt(
 		return
 	}
 
-	if !utils.CheckCooldown("gpt", 60, message, client, cooldowns) {
+	iniData := utils.GetIniData()
+
+	gptCooldown, _ := iniData.Section("cooldowns").Key("gpt").Int()
+	if !utils.CheckCooldown("gpt", gptCooldown, message, client, cooldowns) {
 		return
 	}
-
-	iniData := utils.GetIniData()
 
 	Request := structs.GptRequest{
 		Application: iniData.Section("api").Key("gpt_bot_key").String(),
