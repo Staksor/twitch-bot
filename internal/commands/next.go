@@ -27,7 +27,7 @@ func Next(message twitch.PrivateMessage, client *twitch.Client, movieList []stru
 	var found bool = false
 
 	for i, movie := range movieList {
-		if now.Before(movie.Timestamp) {
+		if now.Before(movie.Timestamp) && !found {
 			nextMovie = movieList[i]
 			leftTime = nextMovie.Timestamp.Sub(now)
 

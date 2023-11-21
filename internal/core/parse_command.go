@@ -5,13 +5,20 @@ import (
 	"bot/internal/structs"
 	"bot/internal/utils"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
 
 // Parses the name of the command and executes its handler
-func ParseCommand(message twitch.PrivateMessage, client *twitch.Client, movieList []structs.Movie) {
+func ParseCommand(
+	message twitch.PrivateMessage,
+	client *twitch.Client,
+	movieList []structs.Movie,
+	gptResponses map[string]*structs.GptResponseState,
+	cooldowns map[string]*time.Time,
+) {
 	iniData := utils.GetIniData()
 
 	var prefix string = iniData.Section("main").Key("bot_command_prefix").String()
@@ -23,23 +30,27 @@ func ParseCommand(message twitch.PrivateMessage, client *twitch.Client, movieLis
 		var command string = splitMessage[0]
 		var args []string = splitMessage[1:]
 
-		switch {
-		case command == "now":
+		switch command {
+		case "now":
 			commands.Now(message, client, movieList)
-		case command == "next":
+		case "next":
 			commands.Next(message, client, movieList)
-		case command == "joke":
+		case "joke":
 			commands.Joke(message, client)
-		case command == "fact":
+		case "fact":
 			commands.Fact(message, client)
-		case command == "gpt":
-			commands.Gpt(message, client, strings.Join(args, " "))
-		case command == "joinchannel":
+		case "gpt":
+			commands.Gpt(message, client, strings.Join(args, " "), gptResponses, cooldowns)
+		case "continue":
+			commands.Continue(message, client, gptResponses)
+		case "joinchannel":
 			commands.JoinChannel(message, client, args[0])
-		case command == "leavechannel":
+		case "leavechannel":
 			commands.LeaveChannel(message, client, args[0])
-		case command == "commands":
+		case "commands":
 			commands.Commands(message, client)
+		case "movie", "movi", "plot":
+			commands.Plot(message, client, strings.Join(args, " "))
 		}
 	}
 }

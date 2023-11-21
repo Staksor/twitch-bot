@@ -5,6 +5,7 @@ import (
 	"bot/internal/structs"
 	"bot/internal/utils"
 	"fmt"
+	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
 )
@@ -18,6 +19,8 @@ func main() {
 		iniData.Section("main").Key("main_channel").String(),
 	}
 	var movieList []structs.Movie
+	cooldowns := make(map[string]*time.Time)
+	gptResponses := make(map[string]*structs.GptResponseState)
 
 	client := twitch.NewClient(iniData.Section("main").Key("bot_account_name").String(), "oauth:"+iniData.Section("main").Key("oauth_access_token").String())
 
@@ -36,7 +39,7 @@ func main() {
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		core.ParseMovieSchedule(message, client, &movieList)
-		core.ParseCommand(message, client, movieList)
+		core.ParseCommand(message, client, movieList, gptResponses, cooldowns)
 	})
 
 	for _, channel := range channels {

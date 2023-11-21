@@ -14,10 +14,20 @@ import (
 )
 
 // Makes a request to an API of a GPT chat bot
-func Gpt(message twitch.PrivateMessage, client *twitch.Client, chatMessage string) {
+func Gpt(
+	message twitch.PrivateMessage,
+	client *twitch.Client,
+	chatMessage string,
+	gptResponseStates map[string]*structs.GptResponseState,
+	cooldowns map[string]*time.Time,
+) {
 	if len(chatMessage) <= 3 {
 		client.Reply(message.Channel, message.ID, "Please write a longer message")
 
+		return
+	}
+
+	if !utils.CheckCooldown("gpt", 60, message, client, cooldowns) {
 		return
 	}
 
@@ -43,12 +53,17 @@ func Gpt(message twitch.PrivateMessage, client *twitch.Client, chatMessage strin
 	var gptResponse structs.GptResponse
 
 	if err := json.Unmarshal([]byte(bodyString), &gptResponse); err == nil {
-		gptResponseMessages := utils.ChunkString(gptResponse.Message, 450)
-		for _, gptResponseMessage := range gptResponseMessages {
-			client.Reply(message.Channel, message.ID, gptResponseMessage)
-			time.Sleep(200 * time.Millisecond)
+		var gptResponseMessages []string = utils.ChunkString(gptResponse.Message, 200)
+		client.Reply(message.Channel, message.ID, gptResponseMessages[0])
+
+		if len(gptResponseMessages) > 1 {
+			userState := new(structs.GptResponseState)
+			userState.Messages = gptResponseMessages[1:]
+			gptResponseStates[message.User.ID] = userState
+			client.Reply(message.Channel, message.ID, "type !continue for more")
 		}
 	} else {
+		client.Reply(message.Channel, message.ID, fmt.Sprintf("There was a error in the API response PoroSad (%s)", bodyString))
 		fmt.Println(err)
 	}
 }
