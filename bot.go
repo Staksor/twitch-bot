@@ -15,15 +15,21 @@ func main() {
 
 	iniData := utils.GetIniData()
 
+	// Initial channels to join
 	channels := []string{
 		iniData.Section("main").Key("main_channel").String(),
 		iniData.Section("main").Key("bot_account_name").String(),
 	}
+
+	// Some state variables
 	var movieList []structs.Movie
 	cooldowns := make(map[string]*time.Time)
 	gptResponses := make(map[string]*structs.GptResponseState)
 
-	client := twitch.NewClient(iniData.Section("main").Key("bot_account_name").String(), "oauth:"+iniData.Section("main").Key("oauth_access_token").String())
+	client := twitch.NewClient(
+		iniData.Section("main").Key("bot_account_name").String(),
+		"oauth:"+iniData.Section("main").Key("oauth_access_token").String(),
+	)
 
 	client.OnConnect(func() {
 		fmt.Println("Connected...")

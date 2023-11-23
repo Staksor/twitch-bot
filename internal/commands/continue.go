@@ -24,7 +24,7 @@ func Continue(
 	}
 
 	if userState != nil && len(userState.Messages) > 0 {
-		client.Reply(message.Channel, message.ID, userState.Messages[0])
+		client.Reply(message.Channel, message.ID, "🤖 "+userState.Messages[0])
 
 		userState.Messages = userState.Messages[1:]
 

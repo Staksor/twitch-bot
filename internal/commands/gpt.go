@@ -55,7 +55,7 @@ func Gpt(
 
 	if err := json.Unmarshal([]byte(bodyString), &gptResponse); err == nil {
 		var gptResponseMessages []string = utils.ChunkString(gptResponse.Message, 200)
-		client.Reply(message.Channel, message.ID, gptResponseMessages[0])
+		client.Reply(message.Channel, message.ID, "🤖 "+gptResponseMessages[0])
 
 		if len(gptResponseMessages) > 1 {
 			userState := new(structs.GptResponseState)
