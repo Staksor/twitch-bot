@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"golang.org/x/text/cases"
@@ -17,8 +18,15 @@ import (
 func Plot(
 	message twitch.PrivateMessage,
 	client *twitch.Client,
+	movieList []structs.Movie,
 	movieName string,
 ) {
+	if len(movieName) == 0 {
+		currentMovie, _ := utils.GetCurrentMovie(movieList)
+		movieName = currentMovie.Name
+	}
+	movieName = strings.TrimSpace(movieName)
+
 	iniData := utils.GetIniData()
 
 	httpClient := &http.Client{}
@@ -34,16 +42,21 @@ func Plot(
 
 	if err := json.Unmarshal([]byte(bodyString), &results); err == nil {
 		if len(results.Results) > 0 {
-			movie := results.Results[0]
-			movieTitle := movie.TitleText.Text
-			movieYear := movie.ReleaseYear.Year
-			moviePlot := movie.Plot.PlotText.PlainText
+			for i, movie := range results.Results {
+				movieTitle := movie.TitleText.Text
+				movieYear := movie.ReleaseYear.Year
+				moviePlot := movie.Plot.PlotText.PlainText
 
-			if len(moviePlot) > 0 {
-				if movieYear > 0 {
-					client.Reply(message.Channel, message.ID, fmt.Sprintf("%s (%d). %s", movieTitle, movieYear, moviePlot))
-				} else {
-					client.Reply(message.Channel, message.ID, fmt.Sprintf("%s. %s", movieTitle, moviePlot))
+				if len(moviePlot) > 0 {
+					if movieYear > 0 {
+						client.Reply(message.Channel, message.ID, fmt.Sprintf("%s (%d). %s", movieTitle, movieYear, moviePlot))
+					} else {
+						client.Reply(message.Channel, message.ID, fmt.Sprintf("%s. %s", movieTitle, moviePlot))
+					}
+
+					break
+				} else if (len(results.Results) - 1) == i {
+					client.Reply(message.Channel, message.ID, "eShrug")
 				}
 			}
 		} else {

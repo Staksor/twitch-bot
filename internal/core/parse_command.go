@@ -25,16 +25,18 @@ func ParseCommand(
 
 	if strings.HasPrefix(message.Message, prefix) {
 		_, i := utf8.DecodeRuneInString(message.Message)
-		var noPrefixMessage string = message.Message[i:]
+		var noPrefixMessage string = strings.TrimSpace(message.Message[i:])
 		var splitMessage []string = strings.Split(noPrefixMessage, " ")
-		var command string = splitMessage[0]
+		var command string = strings.ToLower(splitMessage[0])
 		var args []string = splitMessage[1:]
 
 		switch command {
 		case "now":
 			commands.Now(message, client, movieList)
 		case "next":
-			commands.Next(message, client, movieList)
+			commands.Next(message, client, movieList, false)
+		case "remaining":
+			commands.Next(message, client, movieList, true)
 		case "joke":
 			commands.Joke(message, client)
 		case "fact":
@@ -50,7 +52,7 @@ func ParseCommand(
 		case "commands":
 			commands.Commands(message, client)
 		case "movie", "movi", "plot":
-			commands.Plot(message, client, strings.Join(args, " "))
+			commands.Plot(message, client, movieList, strings.Join(args, " "))
 		}
 	}
 }

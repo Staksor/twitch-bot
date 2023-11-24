@@ -37,7 +37,7 @@ func Gpt(
 	Request := structs.GptRequest{
 		Application: iniData.Section("api").Key("gpt_bot_key").String(),
 		Instance:    iniData.Section("api").Key("gpt_bot_id").String(),
-		Message:     chatMessage,
+		Message:     chatMessage + " (!!!be brief, don't write answers longer than 700 characters!!!)",
 	}
 
 	var buffer bytes.Buffer

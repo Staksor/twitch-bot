@@ -28,24 +28,21 @@ func Now(message twitch.PrivateMessage, client *twitch.Client, movieList []struc
 	var progressString string = ""
 	var now = time.Now()
 
-	for i, movie := range movieList {
-		if now.After(movie.Timestamp) {
-			currentMovie = movie
-			if len(movieList) > i+1 {
-				nextMovie = movieList[i+1]
-				progressTime = now.Sub(currentMovie.Timestamp)
-				totalTime = nextMovie.Timestamp.Sub(currentMovie.Timestamp)
+	currentMovie, currentMovieIndex := utils.GetCurrentMovie(movieList)
 
-				progressString = fmt.Sprintf(
-					"(%s/%s, %d%%)",
-					utils.FormatDuration(progressTime),
-					utils.FormatDuration(totalTime),
-					int(math.Ceil(progressTime.Seconds()/totalTime.Seconds()*100)),
-				)
-			} else {
-				progressString = ""
-			}
-		}
+	if len(movieList) > currentMovieIndex+1 {
+		nextMovie = movieList[currentMovieIndex+1]
+		progressTime = now.Sub(currentMovie.Timestamp)
+		totalTime = nextMovie.Timestamp.Sub(currentMovie.Timestamp)
+
+		progressString = fmt.Sprintf(
+			"(%s/%s, %d%%)",
+			utils.FormatDuration(progressTime),
+			utils.FormatDuration(totalTime),
+			int(math.Ceil(progressTime.Seconds()/totalTime.Seconds()*100)),
+		)
+	} else {
+		progressString = ""
 	}
 
 	client.Reply(message.Channel, message.ID, currentMovie.Name+progressString)
