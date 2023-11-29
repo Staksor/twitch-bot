@@ -37,7 +37,7 @@ func Gpt(
 	Request := structs.GptRequest{
 		Application: iniData.Section("api").Key("gpt_bot_key").String(),
 		Instance:    iniData.Section("api").Key("gpt_bot_id").String(),
-		Message:     chatMessage + " (!!!be brief, don't write answers longer than 700 characters!!!)",
+		Message:     fmt.Sprintf("(my name is %s. answer only to the message inside the quotes as if you just met me, but you know my name) \"%s\" (!!!be brief, don't write answers longer than 700 characters!!!)", message.User.DisplayName, message.Message),
 	}
 
 	var buffer bytes.Buffer
@@ -64,7 +64,7 @@ func Gpt(
 			client.Reply(message.Channel, message.ID, "type !continue for more")
 		}
 	} else {
-		client.Reply(message.Channel, message.ID, fmt.Sprintf("There was a error in the API response PoroSad (%s)", bodyString))
+		client.Reply(message.Channel, message.ID, fmt.Sprintf("There was an error in the API response PoroSad (%s)", bodyString))
 		fmt.Println(err)
 	}
 }

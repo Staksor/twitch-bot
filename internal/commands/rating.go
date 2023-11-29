@@ -13,7 +13,7 @@ import (
 )
 
 // Prints the movie plot
-func Plot(
+func Rating(
 	message twitch.PrivateMessage,
 	client *twitch.Client,
 	movieList []structs.Movie,
@@ -21,9 +21,7 @@ func Plot(
 ) {
 	var movieTitle string = ""
 	var movieYear string = ""
-	var moviePlot string = ""
-	var movieDirector string = "???"
-	var movieCast []string
+	var movieRating string = ""
 
 	if len(movieName) == 0 {
 		currentMovie, _ := utils.GetCurrentMovie(movieList)
@@ -36,7 +34,7 @@ func Plot(
 	)
 
 	// Go to the first result link on the search page
-	scraper.OnHTML("[data-testid=\"find-results-section-title\"] > div > ul > li:first-child a[href]", func(e *colly.HTMLElement) {
+	scraper.OnHTML("[data-testid=\"find-results-section-title\"] li:first-child a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		fmt.Printf("Link found: %q -> %s\n", e.Text, link)
 		parsedUrl, _ := url.Parse(link)
@@ -44,20 +42,14 @@ func Plot(
 		scraper.Visit(e.Request.AbsoluteURL(parsedUrl.EscapedPath()))
 	})
 
-	scraper.OnHTML("[data-testid=\"plot\"] span:first-child", func(e *colly.HTMLElement) {
-		moviePlot = strings.Replace(e.Text, "Read all", "", -1)
-	})
 	scraper.OnHTML("h1[data-testid=\"hero__pageTitle\"] span", func(e *colly.HTMLElement) {
 		movieTitle = e.Text
 	})
+	scraper.OnHTML("[data-testid=\"hero-rating-bar__aggregate-rating__score\"] span:first-child", func(e *colly.HTMLElement) {
+		movieRating = e.Text
+	})
 	scraper.OnHTML("[data-testid=\"find-results-section-title\"] li:first-child a[href] + ul span", func(e *colly.HTMLElement) {
 		movieYear = e.Text
-	})
-	scraper.OnHTML("[data-testid=\"title-pc-principal-credit\"]:first-child a", func(e *colly.HTMLElement) {
-		movieDirector = e.Text
-	})
-	scraper.OnHTML("[data-testid=\"genres\"] ~ div [data-testid=\"title-pc-principal-credit\"]:last-child a.ipc-metadata-list-item__list-content-item", func(e *colly.HTMLElement) {
-		movieCast = append(movieCast, e.Text)
 	})
 
 	scraper.OnRequest(func(r *colly.Request) {
@@ -71,8 +63,8 @@ func Plot(
 
 	scraper.Visit(fmt.Sprintf("https://www.imdb.com/find/?q=%s", url.QueryEscape(movieName)))
 
-	if len(moviePlot) > 0 {
-		client.Reply(message.Channel, message.ID, fmt.Sprintf("%s (%s) by %s. Starring %s. %s", movieTitle, movieYear, movieDirector, strings.Join(movieCast, ", "), moviePlot))
+	if len(movieRating) > 0 {
+		client.Reply(message.Channel, message.ID, fmt.Sprintf("IMDb rating for %s (%s) is %s", movieTitle, movieYear, movieRating))
 	} else {
 		client.Reply(message.Channel, message.ID, "eShrug")
 	}

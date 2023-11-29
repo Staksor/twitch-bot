@@ -46,13 +46,25 @@ func ParseCommand(
 		case "continue":
 			commands.Continue(message, client, gptResponses, cooldowns)
 		case "joinchannel":
-			commands.JoinChannel(message, client, args[0])
+			if len(args) > 0 {
+				commands.JoinChannel(message, client, args[0])
+			}
 		case "leavechannel":
-			commands.LeaveChannel(message, client, args[0])
+			if len(args) > 0 {
+				commands.LeaveChannel(message, client, args[0])
+			}
 		case "commands":
 			commands.Commands(message, client)
 		case "movie", "movi", "plot":
 			commands.Plot(message, client, movieList, strings.Join(args, " "))
+		case "rating":
+			commands.Rating(message, client, movieList, strings.Join(args, " "))
+		case "raffle":
+			var seconds string = "15"
+			if len(args) > 0 {
+				seconds = args[0]
+			}
+			commands.Raffle(message, client, seconds)
 		}
 	}
 }
