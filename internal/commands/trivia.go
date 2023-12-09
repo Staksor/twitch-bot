@@ -5,23 +5,23 @@ import (
 	"bot/internal/utils"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/url"
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/gocolly/colly"
+	strip "github.com/grokify/html-strip-tags-go"
 )
 
 // Prints the movie plot
-func Rating(
+func Trivia(
 	message twitch.PrivateMessage,
 	client *twitch.Client,
 	movieList []structs.Movie,
 	movieName string,
 ) {
-	var movieTitle string = ""
-	var movieYear string = ""
-	var movieRating string = ""
+	var movieTrivia []string
 
 	if len(movieName) == 0 {
 		currentMovie, _ := utils.GetCurrentMovie(movieList)
@@ -39,17 +39,15 @@ func Rating(
 		fmt.Printf("Link found: %q -> %s\n", e.Text, link)
 		parsedUrl, _ := url.Parse(link)
 		// Movie main page
-		scraper.Visit(e.Request.AbsoluteURL(parsedUrl.EscapedPath()))
+		scraper.Visit(e.Request.AbsoluteURL(parsedUrl.EscapedPath()) + "trivia")
 	})
 
-	scraper.OnHTML("h1[data-testid=\"hero__pageTitle\"] span", func(e *colly.HTMLElement) {
-		movieTitle = e.Text
-	})
-	scraper.OnHTML("[data-testid=\"hero-rating-bar__aggregate-rating__score\"] span:first-child", func(e *colly.HTMLElement) {
-		movieRating = e.Text
-	})
-	scraper.OnHTML("[data-testid=\"find-results-section-title\"] li:first-child a[href] + ul span", func(e *colly.HTMLElement) {
-		movieYear = e.Text
+	scraper.OnHTML("section.ipc-page-section.ipc-page-section--base [data-testid=\"item-id\"] .ipc-html-content-inner-div", func(e *colly.HTMLElement) {
+		var currentTrivia string = strip.StripTags(e.Text)
+
+		if len(currentTrivia) <= 460 {
+			movieTrivia = append(movieTrivia, currentTrivia)
+		}
 	})
 
 	scraper.OnRequest(func(r *colly.Request) {
@@ -63,8 +61,8 @@ func Rating(
 
 	scraper.Visit(fmt.Sprintf("https://www.imdb.com/find/?exact=true&q=%s", url.QueryEscape(movieName)))
 
-	if len(movieRating) > 0 {
-		client.Reply(message.Channel, message.ID, fmt.Sprintf("IMDb rating for %s (%s) is %s", movieTitle, movieYear, movieRating))
+	if len(movieTrivia) > 0 {
+		client.Reply(message.Channel, message.ID, movieTrivia[rand.Intn(len(movieTrivia))])
 	} else {
 		client.Reply(message.Channel, message.ID, "eShrug")
 	}

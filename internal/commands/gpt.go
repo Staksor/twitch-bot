@@ -61,7 +61,7 @@ func Gpt(
 			userState := new(structs.GptResponseState)
 			userState.Messages = gptResponseMessages[1:]
 			gptResponseStates[message.User.ID] = userState
-			client.Reply(message.Channel, message.ID, "type !continue for more")
+			client.Reply(message.Channel, message.ID, "Type !continue for more")
 		}
 	} else {
 		client.Reply(message.Channel, message.ID, fmt.Sprintf("There was an error in the API response PoroSad (%s)", bodyString))

@@ -40,7 +40,7 @@ func ParseCommand(
 		case "joke":
 			commands.Joke(message, client)
 		case "fact":
-			commands.Fact(message, client)
+			commands.Fact(message, client, cooldowns)
 		case "gpt":
 			commands.Gpt(message, client, strings.Join(args, " "), gptResponses, cooldowns)
 		case "continue":
@@ -59,12 +59,16 @@ func ParseCommand(
 			commands.Plot(message, client, movieList, strings.Join(args, " "))
 		case "rating":
 			commands.Rating(message, client, movieList, strings.Join(args, " "))
+		case "trivia":
+			commands.Trivia(message, client, movieList, strings.Join(args, " "))
 		case "raffle":
 			var seconds string = "15"
 			if len(args) > 0 {
 				seconds = args[0]
 			}
 			commands.Raffle(message, client, seconds)
+		case "pyramid":
+			commands.Pyramid(message, client, args, cooldowns)
 		}
 	}
 }

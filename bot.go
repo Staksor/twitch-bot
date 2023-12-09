@@ -45,6 +45,10 @@ func main() {
 	})
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		if message.User.Name == iniData.Section("main").Key("bot_account_name").String() {
+			return
+		}
+
 		core.ParseMovieSchedule(message, client, &movieList)
 		core.ParseCommand(message, client, movieList, gptResponses, cooldowns)
 	})

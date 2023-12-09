@@ -36,7 +36,7 @@ func Plot(
 	)
 
 	// Go to the first result link on the search page
-	scraper.OnHTML("[data-testid=\"find-results-section-title\"] > div > ul > li:first-child a[href]", func(e *colly.HTMLElement) {
+	scraper.OnHTML("[data-testid=\"find-results-section-title\"] > div > ul > li:first-child > div > div > a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		fmt.Printf("Link found: %q -> %s\n", e.Text, link)
 		parsedUrl, _ := url.Parse(link)
@@ -54,7 +54,7 @@ func Plot(
 		movieYear = e.Text
 	})
 	scraper.OnHTML("[data-testid=\"title-pc-principal-credit\"]:first-child a", func(e *colly.HTMLElement) {
-		movieDirector = e.Text
+		movieDirector = " by " + e.Text
 	})
 	scraper.OnHTML("[data-testid=\"genres\"] ~ div [data-testid=\"title-pc-principal-credit\"]:last-child a.ipc-metadata-list-item__list-content-item", func(e *colly.HTMLElement) {
 		movieCast = append(movieCast, e.Text)
@@ -69,10 +69,10 @@ func Plot(
 		log.Println("Error:", e, r.Request.URL, string(r.Body))
 	})
 
-	scraper.Visit(fmt.Sprintf("https://www.imdb.com/find/?q=%s", url.QueryEscape(movieName)))
+	scraper.Visit(fmt.Sprintf("https://www.imdb.com/find/?exact=true&q=%s", url.QueryEscape(movieName)))
 
 	if len(moviePlot) > 0 {
-		client.Reply(message.Channel, message.ID, fmt.Sprintf("%s (%s) by %s. Starring %s. %s", movieTitle, movieYear, movieDirector, strings.Join(movieCast, ", "), moviePlot))
+		client.Reply(message.Channel, message.ID, fmt.Sprintf("%s (%s)%s. Starring %s. %s", movieTitle, movieYear, movieDirector, strings.Join(movieCast, ", "), moviePlot))
 	} else {
 		client.Reply(message.Channel, message.ID, "eShrug")
 	}
